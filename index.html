@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ru" data-theme="aurora">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Семейные финансы</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<style>
+:root{--txt:#eef1ff;--mut:#a9b0d0;--a1:#7c9cff;--a2:#ff7ab6;--good:#4fe3a1;--bad:#ff7a8a;--glass:rgba(255,255,255,.09);--edge:rgba(255,255,255,.28);--sh:rgba(0,0,0,.35);--b1:#0b1020;--b2:#5b3df5;--b3:#e0368f;--b4:#14b8a6;color-scheme:dark}
+[data-theme=sunset]{--txt:#fff4ec;--mut:#e8c3ae;--a1:#ffb454;--a2:#ff5e7e;--b1:#1c0d12;--b2:#ff7a1a;--b3:#d6246e;--b4:#7a2cff}
+[data-theme=light]{--txt:#1b2140;--mut:#5d658c;--a1:#4b6bff;--a2:#e8438f;--good:#0f9d6b;--bad:#d6334b;--glass:rgba(255,255,255,.5);--edge:rgba(255,255,255,.95);--sh:rgba(60,70,130,.25);--b1:#e9eeff;--b2:#8aa4ff;--b3:#ffb3d6;--b4:#9be7d8;color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--txt);background:var(--b1);min-height:100vh;transition:background .6s,color .4s}
+.bg{position:fixed;inset:0;overflow:hidden;z-index:-1}
+.bg i{position:absolute;width:55vmax;height:55vmax;border-radius:50%;filter:blur(80px);opacity:.55;animation:dr 22s ease-in-out infinite alternate;transition:background .8s}
+.bg i:nth-child(1){background:var(--b2);left:-15vmax;top:-15vmax}
+.bg i:nth-child(2){background:var(--b3);right:-20vmax;top:25vh;animation-delay:-7s}
+.bg i:nth-child(3){background:var(--b4);left:10vw;bottom:-25vmax;animation-delay:-13s}
+@keyframes dr{to{transform:translate(8vw,6vh) scale(1.15)}}
+#app{max-width:720px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(110px + env(safe-area-inset-bottom))}
+.glass{background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05));background-color:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(180%);backdrop-filter:blur(18px) saturate(180%);border:1px solid var(--edge);border-radius:var(--r,22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -10px 22px rgba(255,255,255,.05),0 12px 32px var(--sh)}
+.lens{position:relative;overflow:hidden;isolation:isolate;cursor:pointer;transition:transform .25s cubic-bezier(.3,1.6,.5,1),box-shadow .25s}
+.lens::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:radial-gradient(80px 80px at var(--mx,28%) var(--my,18%),rgba(255,255,255,.6),transparent 62%);opacity:.5;transition:opacity .3s}
+.lens::after{content:"";position:absolute;inset:1px;z-index:-1;border-radius:inherit;box-shadow:inset 0 0 14px rgba(255,255,255,.35),inset 3px 5px 8px rgba(255,255,255,.25)}
+.lens:hover{transform:scale(1.07)}.lens:hover::before{opacity:.95}.lens:active{transform:scale(.94)}
+button{font:inherit;color:inherit;border:0;background:none;padding:0}
+input,select{font:inherit;color:var(--txt);width:100%;padding:13px 15px;border-radius:16px;border:1px solid var(--edge);background:rgba(255,255,255,.08);outline:0;transition:box-shadow .2s,border-color .2s}
+input:focus,select:focus{border-color:var(--a1);box-shadow:0 0 0 3px color-mix(in srgb,var(--a1) 35%,transparent)}
+select option{color:#111}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.top small{color:var(--mut)}.top h1{margin:0;font-size:24px}
+.tools{display:flex;gap:8px}
+.ic{min-width:42px;height:42px;padding:0 12px;border-radius:50%;font-weight:700;--r:21px}
+.ic.w{border-radius:21px}
+.seg{display:flex;padding:4px;gap:4px;margin-bottom:12px;--r:20px}
+.seg button{flex:1;padding:10px;border-radius:16px;font-weight:600;color:var(--mut);transition:all .3s}
+.seg button.on{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;box-shadow:0 6px 18px color-mix(in srgb,var(--a1) 55%,transparent)}
+.pers{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none}
+.pers button{flex:none;padding:8px 16px;font-weight:600;--r:16px;color:var(--mut)}
+.pers button.on{color:var(--txt);border-color:var(--a1)}
+.view{animation:rise .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.98)}}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.card{padding:14px;margin-bottom:12px}
+.grid .card{margin:0;padding:12px}
+.card h3{margin:0 0 10px;font-size:16px}
+.k{color:var(--mut);font-size:12px}.v{font-size:17px;font-weight:700;display:block;margin:2px 0;word-break:break-word}
+.dl{display:block;font-size:11px;color:var(--mut)}.dl.good,.good{color:var(--good)}.dl.bad,.bad{color:var(--bad)}
+.dn{display:flex;gap:14px;align-items:center}
+.dn svg{width:140px;flex:none}.dn .c{font-size:5px;fill:var(--txt);font-weight:700}.dn .c2{font-size:2.8px;fill:var(--mut)}
+.dn circle{transition:stroke-dasharray .8s}
+.leg{flex:1;min-width:0;font-size:13px}
+.cr{padding:8px 0;border-top:1px solid rgba(255,255,255,.12);cursor:pointer}
+.cr:first-child{border:0}
+.cr .l{display:flex;justify-content:space-between;gap:8px}
+.cr .l span:first-child{display:flex;gap:7px;align-items:center;min-width:0}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.bar{height:6px;border-radius:6px;background:rgba(255,255,255,.12);margin-top:5px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%;border-radius:6px;animation:gw .8s cubic-bezier(.2,.8,.2,1)}
+@keyframes gw{from{width:0!important}}
+.sub{padding:6px 0 2px 17px;font-size:12px;color:var(--mut)}
+.sub div{display:flex;justify-content:space-between;padding:2px 0}
+.more{display:block;margin:10px auto 0;padding:9px 20px;font-weight:600;--r:16px}
+.ch{width:100%;height:auto}.ch rect{transform-box:fill-box;transform-origin:bottom;animation:gr .7s cubic-bezier(.2,.8,.2,1)}
+@keyframes gr{from{transform:scaleY(0)}}.ch text{font-size:7px;fill:var(--mut)}
+.lg{display:flex;gap:14px;font-size:12px;color:var(--mut);margin-top:4px}
+.lg b{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+.row{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:8px;--r:18px}
+.av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;flex:none}
+.rm{flex:1;min-width:0}.rm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rm small{color:var(--mut)}
+.am{font-weight:700;white-space:nowrap}
+.x{width:30px;height:30px;border-radius:50%;color:var(--bad);font-size:20px;background:rgba(255,255,255,.08)}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));width:min(92vw,420px);display:flex;justify-content:space-around;align-items:center;padding:8px 10px;--r:30px;z-index:5}
+.nav>button:not(.fab){flex:1;padding:12px 0;font-weight:600;color:var(--mut);border-radius:22px;transition:color .3s}
+.nav>button.on{color:var(--txt)}
+.fab{width:60px;height:60px;border-radius:50%;font-size:34px;line-height:1;margin-top:-26px;background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;box-shadow:0 10px 26px color-mix(in srgb,var(--a2) 60%,transparent),inset 0 2px 6px rgba(255,255,255,.6)}
+@media(min-resolution:1dppx){.nav,.fab.glass{backdrop-filter:blur(10px) saturate(180%) url(#lens)}}
+.ov{position:fixed;inset:0;background:rgba(5,8,20,.5);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;z-index:20;animation:fi .3s}
+@keyframes fi{from{opacity:0}}
+.sh{width:min(100%,560px);max-height:92vh;overflow:auto;padding:18px 16px calc(18px + env(safe-area-inset-bottom));border-radius:28px 28px 0 0;background-color:color-mix(in srgb,var(--b1) 70%,transparent);animation:up .45s cubic-bezier(.2,.9,.2,1)}
+@keyframes up{from{transform:translateY(100%)}}
+.sh label{display:block;margin:12px 0 5px;font-size:12px;color:var(--mut)}
+.cs{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.chip{padding:6px 12px;font-size:13px;--r:14px}.new{font-size:12px;color:var(--a1);padding:6px 2px}
+.go{width:100%;margin-top:16px;padding:15px;font-weight:700;font-size:16px;background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;--r:18px;border-radius:18px}
+.go:disabled{opacity:.5}
+.au{max-width:380px;margin:8vh auto 0;padding:26px 20px;text-align:center}
+.au h2{margin:6px 0 18px}.au input,.au select{margin-bottom:10px;text-align:left}
+.au a{color:var(--a1);cursor:pointer;font-size:13px}
+.msg{font-size:13px;color:var(--bad);min-height:18px;margin-top:8px}
+.emp{text-align:center;color:var(--mut);padding:18px 0}
+#toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-90px);padding:11px 20px;z-index:50;transition:transform .45s cubic-bezier(.3,1.5,.5,1);--r:20px;max-width:90vw}
+#toast.on{transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="lens" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="22" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+<div id="app"></div><div id="sheet"></div><div id="toast" class="glass"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const SB_URL='https://pzdraaxgzphxennadrlu.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6ZHJhYXhnenBoeGVubmFkcmx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM5OTc1MzAsImV4cCI6MjEwOTU3MzUzMH0.6kFLMZ9cBVCxC8EI3h2ywzleLFmpwrUpM-GgFCD8Gro';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const PAL=['#7c9cff','#ff7ab6','#ffc857','#4fe3c1','#b58cff','#ff8f5a','#8bd3ff','#9be564'];
+const PER=[[1,'День'],[7,'Неделя'],[30,'Месяц'],[365,'Год'],[730,'2 года'],[1095,'3 года']];
+const THEMES=['aurora','sunset','light'],CURS=['сом','₽','$','€'];
+const S={uid:null,fid:null,prof:[],cats:[],tx:[],scope:'me',days:30,view:'home',kind:'expense',all:false,open:{},anim:true,mode:'in',theme:ls.get('th')||'aurora',cur:ls.get('cur')||'сом'};
+document.documentElement.dataset.theme=THEMES.includes(S.theme)?S.theme:'aurora';
+const fmt=n=>(+n).toLocaleString('ru-RU',{maximumFractionDigits:2})+' '+S.cur;
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const win=()=>{const e=today(),s=addD(e,1-S.days),pe=addD(s,-1),ps=addD(pe,1-S.days);return{s:iso(s),e:iso(e),ps:iso(ps),pe:iso(pe)}};
+const inR=(t,a,b)=>t.occurred_on>=a&&t.occurred_on<=b;
+let tT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2800)}
+
+/* ---------- data ---------- */
+async function load(){
+  const [p,c]=await Promise.all([sb.from('profiles').select('*'),sb.from('categories').select('*').order('name')]);
+  if(p.error||c.error){toast((p.error||c.error).message);return}
+  S.prof=p.data;S.cats=c.data;
+  let all=[],i=0;
+  for(;;){
+    const {data,error}=await sb.from('transactions').select('*').order('occurred_on',{ascending:false}).order('created_at',{ascending:false}).range(i,i+999);
+    if(error){toast(error.message);break}
+    all=all.concat(data);if(data.length<1000)break;i+=1000;
+  }
+  S.tx=all;render();
+}
+const me=()=>S.prof.find(p=>p.id===S.uid);
+const pName=id=>{const p=S.prof.find(x=>x.id===id);return p?p.name:'?'};
+const pCol=id=>{const p=S.prof.find(x=>x.id===id);return p&&p.role==='wife'?PAL[1]:PAL[0]};
+const cName=id=>{if(!id)return 'Без категории';const c=S.cats.find(x=>x.id===id);return c?c.name:'?'};
+const scoped=()=>S.tx.filter(t=>S.scope==='fam'||t.owner===S.uid);
+function agg(L){const r={inc:0,exp:0,cat:{},sub:{}};
+  for(const t of L){const a=+t.amount;
+    if(t.kind==='income'){r.inc+=a;continue}
+    r.exp+=a;const c=t.category_id||'none';r.cat[c]=(r.cat[c]||0)+a;
+    const s=t.sub_id||'none';(r.sub[c]=r.sub[c]||{})[s]=(r.sub[c][s]||0)+a}
+  return r}
+const dl=(c,p,badUp)=>{if(!p)return c?'<small class="dl">нет данных за прошлый период</small>':'<small class="dl">&nbsp;</small>';
+  const d=(c-p)/p*100,up=d>0,bad=badUp?up:!up;
+  return `<small class="dl ${Math.round(d)===0?'':bad?'bad':'good'}">${up?'▲':'▼'} ${Math.abs(d).toFixed(0)}% · было ${esc(fmt(p))}</small>`};
+
+/* ---------- views ---------- */
+function bars(L){
+  const d=S.days<=30,n=d?Math.max(S.days,7):Math.round(S.days/365*12),t=today(),keys=[];
+  for(let i=n-1;i>=0;i--){if(d)keys.push(iso(addD(t,-i)));else{const x=new Date(t.getFullYear(),t.getMonth()-i,1);keys.push(x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0'))}}
+  const m={};keys.forEach(k=>m[k]=[0,0]);
+  L.forEach(x=>{const k=d?x.occurred_on:x.occurred_on.slice(0,7);if(m[k])m[k][x.kind==='income'?0:1]+=+x.amount});
+  const mx=Math.max(1,...keys.map(k=>Math.max(m[k][0],m[k][1]))),bw=300/n,st=Math.ceil(n/6);
+  const g=keys.map((k,i)=>{const [a,b]=m[k],x=i*bw,ha=a/mx*88,hb=b/mx*88,lb=d?k.slice(8)+'.'+k.slice(5,7):k.slice(5)+'/'+k.slice(2,4);
+    return `<rect x="${(x+bw*.1).toFixed(1)}" y="${(92-ha).toFixed(1)}" width="${(bw*.38).toFixed(1)}" height="${ha.toFixed(1)}" rx="1.5" fill="var(--good)"/><rect x="${(x+bw*.5).toFixed(1)}" y="${(92-hb).toFixed(1)}" width="${(bw*.38).toFixed(1)}" height="${hb.toFixed(1)}" rx="1.5" fill="var(--a2)"/>`+((n-1-i)%st===0?`<text x="${(x+bw/2).toFixed(1)}" y="104" text-anchor="middle">${lb}</text>`:'')}).join('');
+  return `<svg class="ch" viewBox="0 0 300 108">${g}</svg><div class="lg"><span><b style="background:var(--good)"></b>Доход</span><span><b style="background:var(--a2)"></b>Расход</span></div>`}
+
+function home(){
+  const w=win(),L=scoped(),W=L.filter(t=>inR(t,w.s,w.e)),cur=agg(W),prv=agg(L.filter(t=>inR(t,w.ps,w.pe)));
+  const bal=cur.inc-cur.exp,pbal=prv.inc-prv.exp;
+  let h=`<div class="grid"><div class="card glass"><span class="k">Расход</span><b class="v" data-n="${cur.exp}">${esc(fmt(cur.exp))}</b>${dl(cur.exp,prv.exp,true)}</div>
+  <div class="card glass"><span class="k">Доход</span><b class="v" data-n="${cur.inc}">${esc(fmt(cur.inc))}</b>${dl(cur.inc,prv.inc,false)}</div>
+  <div class="card glass"><span class="k">Остаток</span><b class="v ${bal<0?'bad':'good'}" data-n="${bal}">${esc(fmt(bal))}</b>${dl(bal,pbal,false)}</div></div>`;
+  const cats=Object.entries(cur.cat).sort((a,b)=>b[1]-a[1]),tot=cur.exp||1;
+  h+=`<div class="card glass"><h3>${S.all?'Все категории':'Топ-5 расходов'}</h3>`;
+  if(!cats.length)h+='<div class="emp">За этот период расходов нет</div>';
+  else{
+    let off=0;const arcs=cats.slice(0,5).map(([id,v],i)=>{const p=v/tot*100,a=`<circle r="15.9155" cx="21" cy="21" fill="none" stroke="${PAL[i]}" stroke-width="5.5" stroke-dasharray="${p.toFixed(2)} ${(100-p).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}"/>`;off+=p;return a}).join('');
+    const rest=100-off,ra=rest>.1?`<circle r="15.9155" cx="21" cy="21" fill="none" stroke="rgba(160,170,200,.45)" stroke-width="5.5" stroke-dasharray="${rest.toFixed(2)} ${(100-rest).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}"/>`:'';
+    const list=S.all?cats:cats.slice(0,5);
+    h+=`<div class="dn"><svg viewBox="0 0 42 42"><g transform="rotate(-90 21 21)">${arcs}${ra}</g><text class="c2" x="21" y="19.5" text-anchor="middle">всего</text><text class="c" x="21" y="25" text-anchor="middle">${esc(Math.round(cur.exp).toLocaleString('ru-RU'))}</text></svg>
+    <div class="leg">${cats.slice(0,5).map(([id,v],i)=>`<div class="l" style="display:flex;gap:7px;align-items:center;margin:3px 0"><span class="dot" style="background:${PAL[i]}"></span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(cName(id==='none'?null:id))}</span><b>${(v/tot*100).toFixed(0)}%</b></div>`).join('')}</div></div><div style="margin-top:10px">`;
+    h+=list.map(([id,v],i)=>{const c=PAL[i%PAL.length],open=S.open[id];let sub='';
+      if(open){const ss=Object.entries(cur.sub[id]||{}).sort((a,b)=>b[1]-a[1]);
+        sub=`<div class="sub">${ss.map(([sid,sv])=>`<div><span>${esc(sid==='none'?'Без уточнения':cName(sid))}</span><span>${esc(fmt(sv))}</span></div>`).join('')}</div>`}
+      return `<div class="cr" data-a="tog" data-v="${esc(id)}"><div class="l"><span><i class="dot" style="background:${c}"></i>${esc(cName(id==='none'?null:id))}</span><b>${esc(fmt(v))}</b></div><div class="bar"><i style="width:${(v/tot*100).toFixed(1)}%;background:${c}"></i></div>${sub}</div>`}).join('')+'</div>';
+    if(cats.length>5)h+=`<button class="more glass lens" data-a="all">${S.all?'Свернуть до топ-5':'Подробно: все '+cats.length}</button>`;
+    h+='<div class="k" style="text-align:center;margin-top:8px">Нажмите на категорию — увидите, на что именно ушло</div>';
+  }
+  h+='</div>';
+  h+=`<div class="card glass"><h3>Динамика</h3>${bars(L)}</div>`;
+  if(S.scope==='fam')h+=famPanel(W,cur);
+  return h}
+
+function famPanel(W,cur){
+  const ps=[...S.prof].sort((a,b)=>a.role<b.role?-1:1).reverse();
+  const A=ps.map(p=>({p,a:agg(W.filter(t=>t.owner===p.id))}));
+  const mx=Math.max(1,...A.map(x=>Math.max(x.a.inc,x.a.exp)));
+  let h=`<div class="card glass"><h3>Кто сколько</h3>`+A.map(({p,a})=>{const c=p.role==='wife'?PAL[1]:PAL[0];
+    return `<div style="margin:10px 0"><div class="l" style="display:flex;justify-content:space-between"><b style="color:${c}">${esc(p.name)} <span class="k">(${p.role==='wife'?'жена':'муж'})</span></b></div>
+    <div class="k" style="display:flex;justify-content:space-between;margin-top:4px"><span>Получил(а)</span><span class="good">${esc(fmt(a.inc))}</span></div><div class="bar"><i style="width:${a.inc/mx*100}%;background:var(--good)"></i></div>
+    <div class="k" style="display:flex;justify-content:space-between;margin-top:4px"><span>Потратил(а)</span><span class="bad">${esc(fmt(a.exp))}</span></div><div class="bar"><i style="width:${a.exp/mx*100}%;background:${c}"></i></div></div>`}).join('')+'</div>';
+  const top=Object.entries(cur.cat).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(top.length&&A.length>1){
+    h+=`<div class="card glass"><h3>Расходы по категориям: сравнение</h3><div class="lg" style="margin:0 0 6px">${A.map(({p})=>`<span><b style="background:${p.role==='wife'?PAL[1]:PAL[0]}"></b>${esc(p.name)}</span>`).join('')}</div>`+
+    top.map(([id,v])=>`<div style="margin:9px 0"><div class="k" style="display:flex;justify-content:space-between"><span>${esc(cName(id==='none'?null:id))}</span><span>${esc(fmt(v))}</span></div><div class="bar">${A.map(({p,a})=>{const x=a.cat[id]||0;return `<i title="${esc(p.name)}: ${esc(fmt(x))}" style="width:${x/v*100}%;background:${p.role==='wife'?PAL[1]:PAL[0]};border-radius:0"></i>`}).join('')}</div><div class="k" style="display:flex;justify-content:space-between">${A.map(({a})=>`<span>${esc(fmt(a.cat[id]||0))}</span>`).join('')}</div></div>`).join('')+'</div>'}
+  return h}
+
+function hist(){
+  const w=win(),W=scoped().filter(t=>inR(t,w.s,w.e)).slice(0,300);
+  if(!W.length)return '<div class="emp card glass">За этот период записей нет</div>';
+  return W.map(t=>{const own=t.owner===S.uid,inc=t.kind==='income',nm=pName(t.owner);
+    return `<div class="row glass"><div class="av" style="background:${pCol(t.owner)}">${esc(nm.slice(0,1).toUpperCase())}</div><div class="rm"><b>${esc(cName(t.category_id))}${t.sub_id?' › '+esc(cName(t.sub_id)):''}</b><small>${t.occurred_on.split('-').reverse().join('.')}${S.scope==='fam'?' · '+esc(nm):''}${t.note?' · '+esc(t.note):''}</small></div><div class="am ${inc?'good':''}">${inc?'+':'−'}${esc(fmt(t.amount))}</div>${own?`<button class="x" data-a="del" data-v="${esc(t.id)}" aria-label="Удалить">×</button>`:''}</div>`}).join('')}
+
+function render(){
+  const app=$('#app');
+  if(!S.uid){
+    const up=S.mode==='up';
+    app.innerHTML=`<form id="af" class="au glass"><div style="font-size:42px">💎</div><h2>Семейные финансы</h2>
+    ${up?'<input id="nm" placeholder="Ваше имя" required maxlength="30"><select id="rl"><option value="husband">Я — муж</option><option value="wife">Я — жена</option></select>':''}
+    <input id="em" type="email" placeholder="Почта" autocomplete="email" required><input id="pw" type="password" placeholder="Пароль (от 6 символов)" autocomplete="${up?'new-password':'current-password'}" minlength="6" required>
+    <button class="go lens" id="ab">${up?'Зарегистрироваться':'Войти'}</button><div class="msg" id="am2"></div><a data-a="mode">${up?'Уже есть аккаунт? Войти':'Первый раз? Регистрация'}</a></form>`;
+    return}
+  const m=me();
+  app.innerHTML=`<div class="top"><div><small>Привет,</small><h1>${esc(m?m.name:'')}</h1></div><div class="tools"><button class="ic glass lens" data-a="theme" title="Тема">◐</button><button class="ic glass lens" data-a="cur" title="Валюта">${esc(S.cur)}</button><button class="ic glass lens" data-a="out" title="Выйти">⎋</button></div></div>
+  <div class="seg glass"><button class="${S.scope==='me'?'on':''}" data-a="scope" data-v="me">Мои</button><button class="${S.scope==='fam'?'on':''}" data-a="scope" data-v="fam">Семья</button></div>
+  <div class="pers">${PER.map(([d,l])=>`<button class="glass lens ${S.days===d?'on':''}" data-a="per" data-v="${d}">${l}</button>`).join('')}</div>
+  <div class="${S.anim?'view':''}">${S.view==='home'?home():hist()}</div>
+  <nav class="nav glass"><button class="${S.view==='home'?'on':''}" data-a="view" data-v="home">Обзор</button><button class="fab glass lens" data-a="add" aria-label="Добавить">+</button><button class="${S.view==='hist'?'on':''}" data-a="view" data-v="hist">История</button></nav>`;
+  if(S.anim){document.querySelectorAll('[data-n]').forEach(el=>{const v=+el.dataset.n,t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/650);el.textContent=k<1?fmt(v*(1-Math.pow(1-k,3))):fmt(v);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
+  S.anim=false}
+
+/* ---------- add sheet ---------- */
+function catBy(name,parent,kind){const n=name.trim().toLowerCase();return S.cats.find(c=>c.kind===kind&&(c.parent_id||null)===(parent||null)&&c.name.toLowerCase()===n)}
+function sugg(inp,box,parent){
+  const q=$('#'+inp).value.trim().toLowerCase(),use={};
+  S.tx.forEach(t=>{const k=parent?t.sub_id:t.category_id;if(k)use[k]=(use[k]||0)+1});
+  let l=S.cats.filter(c=>c.kind===S.kind&&(c.parent_id||null)===(parent||null)).sort((a,b)=>(use[b.id]||0)-(use[a.id]||0)||a.name.localeCompare(b.name,'ru'));
+  if(q)l=l.filter(c=>c.name.toLowerCase().startsWith(q)).concat(l.filter(c=>!c.name.toLowerCase().startsWith(q)&&c.name.toLowerCase().includes(q)));
+  const exact=q&&l.some(c=>c.name.toLowerCase()===q);
+  $('#'+box).innerHTML=l.slice(0,8).map(c=>`<button type="button" class="chip glass lens" data-a="pick" data-t="${inp}" data-v="${esc(c.name)}">${esc(c.name)}</button>`).join('')+(q&&!exact?`<span class="new">+ будет создано: «${esc($('#'+inp).value.trim())}»</span>`:'')}
+function upd(){
+  sugg('ct','cs',null);const pc=catBy($('#ct').value,null,S.kind);
+  if(pc)sugg('sc','ss',pc.id);else $('#ss').innerHTML=$('#ct').value.trim()?'<span class="new">Новая категория — подкатегории появятся после сохранения</span>':'';}
+function openSheet(){
+  S.kind='expense';
+  $('#sheet').innerHTML=`<div class="ov" data-a="ovl"><div class="sh glass"><div class="seg glass"><button class="on" data-a="kind" data-v="expense">Расход</button><button data-a="kind" data-v="income">Доход</button></div>
+  <label>Сумма, ${esc(S.cur)}</label><input id="am" inputmode="decimal" placeholder="0" autocomplete="off">
+  <label>Дата</label><input id="dt" type="date" value="${iso(today())}" max="${iso(today())}">
+  <label>Категория (начните вводить первые буквы)</label><input id="ct" autocomplete="off" maxlength="60" placeholder="Магазин, Транспорт, Еда…"><div class="cs" id="cs"></div>
+  <label>Подкатегория (на что именно)</label><input id="sc" autocomplete="off" maxlength="60" placeholder="Продукты, Такси, Заказ…"><div class="cs" id="ss"></div>
+  <label>Заметка</label><input id="nt" maxlength="300" placeholder="Необязательно">
+  <button class="go lens" id="sv" data-a="save">Сохранить</button></div></div>`;
+  upd();setTimeout(()=>{const a=$('#am');if(a)a.focus()},80)}
+async function ensureCat(name,parent,kind){
+  name=name.trim();let c=catBy(name,parent,kind);if(c)return c.id;
+  const {data,error}=await sb.from('categories').insert({name,parent_id:parent||null,kind,family_id:S.fid}).select().single();
+  if(error){const r=await sb.from('categories').select('*');if(r.data)S.cats=r.data;c=catBy(name,parent,kind);if(c)return c.id;throw error}
+  S.cats.push(data);return data.id}
+async function save(){
+  const amt=Number($('#am').value.replace(/\s/g,'').replace(',','.')),cn=$('#ct').value.trim(),sn=$('#sc').value.trim();
+  if(!(amt>0)||amt>=1e12)return toast('Введите сумму больше нуля');
+  if(!cn)return toast('Укажите категорию');
+  const b=$('#sv');b.disabled=true;
+  try{
+    const cid=await ensureCat(cn,null,S.kind),sid=sn?await ensureCat(sn,cid,S.kind):null;
+    const {error}=await sb.from('transactions').insert({kind:S.kind,amount:Math.round(amt*100)/100,category_id:cid,sub_id:sid,note:$('#nt').value.trim()||null,occurred_on:$('#dt').value||iso(today())});
+    if(error)throw error;
+    $('#sheet').innerHTML='';S.anim=true;await load();toast('Сохранено ✓');
+  }catch(e){toast(e.message||'Ошибка сохранения');b.disabled=false}}
+
+/* ---------- auth ---------- */
+async function enter(user){
+  S.uid=user.id;await load();const m=me();
+  if(!m){toast('Профиль не найден');await sb.auth.signOut();S.uid=null;render();return}
+  S.fid=m.family_id;S.anim=true;render()}
+async function doAuth(){
+  const up=S.mode==='up',em=$('#em').value.trim(),pw=$('#pw').value,msg=$('#am2'),b=$('#ab');
+  b.disabled=true;msg.style.color='var(--bad)';msg.textContent='';
+  try{
+    if(up){
+      const {data,error}=await sb.auth.signUp({email:em,password:pw,options:{data:{name:$('#nm').value.trim(),role:$('#rl').value}}});
+      if(error)throw error;
+      if(data.session){await enter(data.user);return}
+      msg.style.color='var(--good)';msg.textContent='Готово. Подтвердите почту по письму и войдите.';S.mode='in'
+    }else{
+      const {data,error}=await sb.auth.signInWithPassword({email:em,password:pw});
+      if(error)throw error;await enter(data.user);return}
+  }catch(e){
+    const t=e.message||'';
+    msg.textContent=/Database error/i.test(t)?'Регистрация закрыта: в семье уже два участника.':/Invalid login/i.test(t)?'Неверная почта или пароль.':/not confirmed/i.test(t)?'Почта ещё не подтверждена.':t||'Ошибка'}
+  b.disabled=false}
+
+/* ---------- events ---------- */
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-a]');if(!b)return;
+  const a=b.dataset.a,v=b.dataset.v;
+  if(a==='ovl'){if(e.target===b)$('#sheet').innerHTML='';return}
+  if(a==='scope'){S.scope=v;S.anim=true;render()}
+  else if(a==='per'){S.days=+v;render()}
+  else if(a==='view'){S.view=v;S.anim=true;render()}
+  else if(a==='tog'){S.open[v]=!S.open[v];render()}
+  else if(a==='all'){S.all=!S.all;render()}
+  else if(a==='add')openSheet();
+  else if(a==='kind'){S.kind=v;$('#sheet').querySelectorAll('[data-a=kind]').forEach(x=>x.classList.toggle('on',x.dataset.v===v));upd()}
+  else if(a==='pick'){$('#'+b.dataset.t).value=v;if(b.dataset.t==='ct')$('#sc').value='';upd()}
+  else if(a==='save')save();
+  else if(a==='del'){if(confirm('Удалить эту запись?')){const {error}=await sb.from('transactions').delete().eq('id',v);if(error)toast(error.message);else{S.tx=S.tx.filter(t=>t.id!==v);render();toast('Удалено')}}}
+  else if(a==='theme'){S.theme=THEMES[(THEMES.indexOf(S.theme)+1)%THEMES.length];document.documentElement.dataset.theme=S.theme;ls.set('th',S.theme)}
+  else if(a==='cur'){S.cur=CURS[(CURS.indexOf(S.cur)+1)%CURS.length];ls.set('cur',S.cur);render()}
+  else if(a==='out'){await sb.auth.signOut();S.uid=null;S.tx=[];S.mode='in';render()}
+  else if(a==='mode'){S.mode=S.mode==='in'?'up':'in';render()}
+});
+document.addEventListener('submit',e=>{if(e.target.id==='af'){e.preventDefault();doAuth()}});
+document.addEventListener('input',e=>{if(e.target.id==='ct'||e.target.id==='sc')upd()});
+document.addEventListener('pointermove',e=>{const l=e.target.closest&&e.target.closest('.lens');if(l){const r=l.getBoundingClientRect();l.style.setProperty('--mx',(e.clientX-r.left)+'px');l.style.setProperty('--my',(e.clientY-r.top)+'px')}});
+(async()=>{
+  render();
+  const {data}=await sb.auth.getSession();
+  if(data.session)await enter(data.session.user);
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
