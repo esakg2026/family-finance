@@ -187,7 +187,7 @@ function home(){
   return h}
 
 function famPanel(W,cur){
-  const ps=[...S.prof].sort((a,b)=>a.role<b.role?-1:1).reverse();
+  const ps=S.prof.filter(p=>p.role!=='family').sort((a,b)=>a.role<b.role?1:-1);
   const A=ps.map(p=>({p,a:agg(W.filter(t=>t.owner===p.id))}));
   const mx=Math.max(1,...A.map(x=>Math.max(x.a.inc,x.a.exp)));
   let h=`<div class="card glass"><h3>Кто сколько</h3>`+A.map(({p,a})=>{const c=p.role==='wife'?PAL[1]:PAL[0];
@@ -209,18 +209,15 @@ function hist(){
 function render(){
   const app=$('#app');
   if(!S.uid){
-    const up=S.mode==='up';
     app.innerHTML=`<form id="af" class="au glass"><div style="font-size:42px">💎</div><h2>Семейные финансы</h2>
-    ${up?'<input id="nm" placeholder="Ваше имя" required maxlength="30"><select id="rl"><option value="husband">Я — муж</option><option value="wife">Я — жена</option></select>':''}
-    <input id="em" type="email" placeholder="Почта" autocomplete="email" required><input id="pw" type="password" placeholder="Пароль (от 6 символов)" autocomplete="${up?'new-password':'current-password'}" minlength="6" required>
-    <button class="go lens" id="ab">${up?'Зарегистрироваться':'Войти'}</button><div class="msg" id="am2"></div><a data-a="mode">${up?'Уже есть аккаунт? Войти':'Первый раз? Регистрация'}</a></form>`;
+    <input id="em" placeholder="Логин" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required><input id="pw" type="password" placeholder="Пароль" autocomplete="current-password" required>
+    <button class="go lens" id="ab">Войти</button><div class="msg" id="am2"></div></form>`;
     return}
   const m=me();
-  app.innerHTML=`<div class="top"><div><small>Привет,</small><h1>${esc(m?m.name:'')}</h1></div><div class="tools"><button class="ic glass lens" data-a="theme" title="Тема">◐</button><button class="ic glass lens" data-a="cur" title="Валюта">${esc(S.cur)}</button><button class="ic glass lens" data-a="out" title="Выйти">⎋</button></div></div>
-  <div class="seg glass"><button class="${S.scope==='me'?'on':''}" data-a="scope" data-v="me">Мои</button><button class="${S.scope==='fam'?'on':''}" data-a="scope" data-v="fam">Семья</button></div>
+  app.innerHTML=`<div class="top"><div><small>${S.scope==='fam'?'Общий обзор семьи':'Привет,'}</small><h1>${esc(m?m.name:'')}</h1></div><div class="tools"><button class="ic glass lens" data-a="theme" title="Тема">◐</button><button class="ic glass lens" data-a="cur" title="Валюта">${esc(S.cur)}</button><button class="ic glass lens" data-a="out" title="Выйти">⎋</button></div></div>
   <div class="pers">${PER.map(([d,l])=>`<button class="glass lens ${S.days===d?'on':''}" data-a="per" data-v="${d}">${l}</button>`).join('')}</div>
   <div class="${S.anim?'view':''}">${S.view==='home'?home():hist()}</div>
-  <nav class="nav glass"><button class="${S.view==='home'?'on':''}" data-a="view" data-v="home">Обзор</button><button class="fab glass lens" data-a="add" aria-label="Добавить">+</button><button class="${S.view==='hist'?'on':''}" data-a="view" data-v="hist">История</button></nav>`;
+  <nav class="nav glass"><button class="${S.view==='home'?'on':''}" data-a="view" data-v="home">Обзор</button>${m&&m.role==='family'?'':'<button class="fab glass lens" data-a="add" aria-label="Добавить">+</button>'}<button class="${S.view==='hist'?'on':''}" data-a="view" data-v="hist">История</button></nav>`;
   if(S.anim){document.querySelectorAll('[data-n]').forEach(el=>{const v=+el.dataset.n,t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/650);el.textContent=k<1?fmt(v*(1-Math.pow(1-k,3))):fmt(v);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
   S.anim=false}
 
@@ -267,22 +264,17 @@ async function save(){
 async function enter(user){
   S.uid=user.id;await load();const m=me();
   if(!m){toast('Профиль не найден');await sb.auth.signOut();S.uid=null;render();return}
-  S.fid=m.family_id;S.anim=true;render()}
+  S.fid=m.family_id;S.scope=m.role==='family'?'fam':'me';S.view='home';S.anim=true;render()}
 async function doAuth(){
-  const up=S.mode==='up',em=$('#em').value.trim(),pw=$('#pw').value,msg=$('#am2'),b=$('#ab');
-  b.disabled=true;msg.style.color='var(--bad)';msg.textContent='';
+  const u=$('#em').value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,''),pw=$('#pw').value,msg=$('#am2'),b=$('#ab');
+  b.disabled=true;msg.textContent='';
   try{
-    if(up){
-      const {data,error}=await sb.auth.signUp({email:em,password:pw,options:{data:{name:$('#nm').value.trim(),role:$('#rl').value}}});
-      if(error)throw error;
-      if(data.session){await enter(data.user);return}
-      msg.style.color='var(--good)';msg.textContent='Готово. Подтвердите почту по письму и войдите.';S.mode='in'
-    }else{
-      const {data,error}=await sb.auth.signInWithPassword({email:em,password:pw});
-      if(error)throw error;await enter(data.user);return}
+    if(!u)throw new Error('Invalid login');
+    const {data,error}=await sb.auth.signInWithPassword({email:u+'@ff.example.com',password:pw});
+    if(error)throw error;await enter(data.user);return
   }catch(e){
     const t=e.message||'';
-    msg.textContent=/Database error/i.test(t)?'Регистрация закрыта: в семье уже два участника.':/Invalid login/i.test(t)?'Неверная почта или пароль.':/not confirmed/i.test(t)?'Почта ещё не подтверждена.':t||'Ошибка'}
+    msg.textContent=/Invalid login/i.test(t)?'Неверный логин или пароль.':t||'Ошибка'}
   b.disabled=false}
 
 /* ---------- events ---------- */
@@ -302,7 +294,7 @@ document.addEventListener('click',async e=>{
   else if(a==='del'){if(confirm('Удалить эту запись?')){const {error}=await sb.from('transactions').delete().eq('id',v);if(error)toast(error.message);else{S.tx=S.tx.filter(t=>t.id!==v);render();toast('Удалено')}}}
   else if(a==='theme'){S.theme=THEMES[(THEMES.indexOf(S.theme)+1)%THEMES.length];document.documentElement.dataset.theme=S.theme;ls.set('th',S.theme)}
   else if(a==='cur'){S.cur=CURS[(CURS.indexOf(S.cur)+1)%CURS.length];ls.set('cur',S.cur);render()}
-  else if(a==='out'){await sb.auth.signOut();S.uid=null;S.tx=[];S.mode='in';render()}
+  else if(a==='out'){await sb.auth.signOut();S.uid=null;S.tx=[];S.prof=[];render()}
   else if(a==='mode'){S.mode=S.mode==='in'?'up':'in';render()}
 });
 document.addEventListener('submit',e=>{if(e.target.id==='af'){e.preventDefault();doAuth()}});
